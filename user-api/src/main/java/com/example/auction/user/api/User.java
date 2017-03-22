@@ -2,13 +2,15 @@ package com.example.auction.user.api;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.lightbend.lagom.serialization.Jsonable;
 import lombok.Value;
 
 import java.util.Optional;
 import java.util.UUID;
 
 @Value
-public final class User {
+// Since this is persisted, it needs to implement Jsonable
+public final class User implements Jsonable {
 
     private final UUID id;
     private final String name;

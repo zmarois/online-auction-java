@@ -1,5 +1,22 @@
 package com.example.auction.user.impl;
 
+import java.util.Optional;
+import java.util.UUID;
+
+import javax.inject.Inject;
+
+import org.pcollections.PSequence;
+import org.pcollections.TreePVector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.example.auction.user.api.User;
+import com.example.auction.user.api.UserService;
+import com.lightbend.lagom.javadsl.api.ServiceCall;
+import com.lightbend.lagom.javadsl.api.transport.NotFound;
+import com.lightbend.lagom.javadsl.persistence.PersistentEntityRef;
+import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
+
 import akka.NotUsed;
 import akka.actor.ActorSystem;
 import akka.persistence.cassandra.query.javadsl.CassandraReadJournal;
@@ -7,21 +24,9 @@ import akka.persistence.query.PersistenceQuery;
 import akka.persistence.query.javadsl.CurrentPersistenceIdsQuery;
 import akka.stream.Materializer;
 import akka.stream.javadsl.Sink;
-import com.example.auction.user.api.User;
-import com.example.auction.user.api.UserService;
-import com.lightbend.lagom.javadsl.api.ServiceCall;
-import com.lightbend.lagom.javadsl.api.transport.NotFound;
-import com.lightbend.lagom.javadsl.persistence.PersistentEntityRef;
-import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
-import org.pcollections.PSequence;
-import org.pcollections.TreePVector;
-
-import javax.inject.Inject;
-import java.util.Optional;
-import java.util.UUID;
 
 public class UserServiceImpl implements UserService {
-
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     private final PersistentEntityRegistry registry;
     private final CurrentPersistenceIdsQuery currentIdsQuery;
     private final Materializer mat;
@@ -40,6 +45,7 @@ public class UserServiceImpl implements UserService {
     public ServiceCall<User, User> createUser() {
         return user -> {
             UUID uuid = UUID.randomUUID();
+            log.warn("Requesting creation of user " + uuid);
             return entityRef(uuid).ask(new UserCommand.CreateUser(user.getName()));
         };
     }

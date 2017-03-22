@@ -4,12 +4,15 @@ import com.example.auction.user.api.User;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 import com.example.auction.user.impl.UserCommand.*;
 import com.example.auction.user.impl.UserEvent.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
 public class UserEntity extends PersistentEntity<UserCommand, UserEvent, Optional<User>> {
+    private static final Logger log = LoggerFactory.getLogger(UserEntity.class);
 
     @Override
     public Behavior initialBehavior(Optional<Optional<User>> snapshotState) {
@@ -44,7 +47,13 @@ public class UserEntity extends PersistentEntity<UserCommand, UserEvent, Optiona
         );
 
         b.setCommandHandler(CreateUser.class, (create, ctx) -> {
+            log.warn("Creating user " + entityId());
             User user = new User(UUID.fromString(entityId()), create.getName());
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             return ctx.thenPersist(new UserCreated(user), (e) -> ctx.reply(user));
         });
 

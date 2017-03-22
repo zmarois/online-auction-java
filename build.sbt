@@ -145,7 +145,9 @@ lazy val userApi = (project in file("user-api"))
     version := "1.0-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomJavadslApi,
-      lombok
+      lombok,
+      lagomJavadslJackson
+
     )
   )
   .dependsOn(security)
